@@ -9,6 +9,8 @@ class ofApp : public ofBaseApp{
 		void update();
 		void draw();
 
+		void audioOut(ofSoundBuffer& outBuffer);
+
 		void keyPressed(int key);
 		void keyReleased(int key);
 		void mouseMoved(int x, int y );
@@ -20,5 +22,10 @@ class ofApp : public ofBaseApp{
 		void windowResized(int w, int h);
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
-		
+
+		double wavePhase;
+
+		std::mutex audioMutex;
+		ofSoundStream soundStream;
+		ofSoundBuffer lastBuffer;
 };
