@@ -3,11 +3,16 @@
 //--------------------------------------------------------------
 void ofApp::setup(){
 	ofSetVerticalSync(true);
+	ofBackground(255, 255, 255);
 
+#ifdef _DEBUG
+	ofSetLogLevel(OF_LOG_VERBOSE);
+#endif
+
+	// Variable
 	wavePhase = 0;
 
-	// start the sound stream with a sample rate of 44100 Hz, and a buffer
-	// size of 512 samples per audioOut() call
+	// Sound stream
 	ofSoundStreamSettings settings;
 
 	auto devices = soundStream.getDeviceList(ofSoundDevice::Api::MS_DS);
@@ -19,6 +24,19 @@ void ofApp::setup(){
 	settings.numBuffers = 4;
 	settings.setOutListener(this);
 	soundStream.setup(settings);
+
+	// Midi
+
+	// print input ports to console
+#ifdef _DEBUG
+	midiIn.listInPorts();
+	midiIn.setVerbose(true);
+#endif
+
+	midiIn.openPort(17);
+	//midiIn.openPort("iRig KEYS 25 17");
+	midiIn.ignoreTypes(false, false, false);
+	midiIn.addListener(this);
 }
 
 //--------------------------------------------------------------
@@ -31,6 +49,14 @@ void ofApp::draw(){
 
 }
 
+//--------------------------------------------------------------
+void ofApp::exit() {
+	// clean up
+	midiIn.closePort();
+	midiIn.removeListener(this);
+}
+
+//--------------------------------------------------------------
 void ofApp::audioOut(ofSoundBuffer& outBuffer) {
 	float frequency = 440.0;
 	float wavePhaseStep = (frequency / outBuffer.getSampleRate()) * TWO_PI;
@@ -101,4 +127,17 @@ void ofApp::gotMessage(ofMessage msg){
 //--------------------------------------------------------------
 void ofApp::dragEvent(ofDragInfo dragInfo){ 
 
+}
+
+
+//--------------------------------------------------------------
+void ofApp::newMidiMessage(ofxMidiMessage& msg) {
+
+	// add the latest message to the message queue
+	midiMessages.push_back(msg);
+
+	// remove any old messages if we have too many
+	while (midiMessages.size() > maxMessages) {
+		midiMessages.erase(midiMessages.begin());
+	}
 }

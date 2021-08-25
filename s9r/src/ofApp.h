@@ -1,13 +1,15 @@
 #pragma once
 
 #include "ofMain.h"
+#include "ofxMidi.h"
 
-class ofApp : public ofBaseApp{
+class ofApp : public ofBaseApp, public ofxMidiListener {
 
 	public:
 		void setup();
 		void update();
 		void draw();
+		void exit();
 
 		void audioOut(ofSoundBuffer& outBuffer);
 
@@ -28,4 +30,10 @@ class ofApp : public ofBaseApp{
 		std::mutex audioMutex;
 		ofSoundStream soundStream;
 		ofSoundBuffer lastBuffer;
+
+
+		ofxMidiIn midiIn;
+		std::vector<ofxMidiMessage> midiMessages;
+		std::size_t maxMessages = 10; //< max number of messages to keep track of
+		void newMidiMessage(ofxMidiMessage& eventArgs);
 };
