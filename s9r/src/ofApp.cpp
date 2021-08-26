@@ -18,7 +18,7 @@ void ofApp::setup(){
 	auto devices = soundStream.getDeviceList(ofSoundDevice::Api::MS_DS);
 	settings.setOutDevice(devices[1]);
 
-	settings.numOutputChannels = 2;
+	settings.numOutputChannels = OUTPUT_CHANNELS;
 	settings.sampleRate = 44100;
 	settings.bufferSize = 512;
 	settings.numBuffers = 4;
@@ -26,10 +26,8 @@ void ofApp::setup(){
 	soundStream.setup(settings);
 
 	// Midi
-
-	// print input ports to console
 #ifdef _DEBUG
-	midiIn.listInPorts();
+	midiIn.listInPorts();     // print input ports to console
 	midiIn.setVerbose(true);
 #endif
 
@@ -58,7 +56,13 @@ void ofApp::exit() {
 
 //--------------------------------------------------------------
 void ofApp::audioOut(ofSoundBuffer& outBuffer) {
-	float frequency = 440.0;
+	for (size_t i = 0; i < outBuffer.getNumFrames(); i++) {
+		for (size_t ch = 0; ch < OUTPUT_CHANNELS; ch++) {
+			outBuffer.getSample(i, ch) = synth.signalProcess(ch);
+		}
+	}
+
+#if 0 //@@@ WIP
 	float wavePhaseStep = (frequency / outBuffer.getSampleRate()) * TWO_PI;
 
 	for (size_t i = 0; i < outBuffer.getNumFrames(); i++) {
@@ -72,6 +76,19 @@ void ofApp::audioOut(ofSoundBuffer& outBuffer) {
 
 	unique_lock<mutex> lock(audioMutex);
 	lastBuffer = outBuffer;
+#endif
+}
+
+//--------------------------------------------------------------
+void ofApp::newMidiMessage(ofxMidiMessage& msg) {
+
+	// add the latest message to the message queue
+	midiMessages.push_back(msg);
+
+	// remove any old messages if we have too many
+	while (midiMessages.size() > maxMessages) {
+		midiMessages.erase(midiMessages.begin());
+	}
 }
 
 //--------------------------------------------------------------
@@ -127,17 +144,4 @@ void ofApp::gotMessage(ofMessage msg){
 //--------------------------------------------------------------
 void ofApp::dragEvent(ofDragInfo dragInfo){ 
 
-}
-
-
-//--------------------------------------------------------------
-void ofApp::newMidiMessage(ofxMidiMessage& msg) {
-
-	// add the latest message to the message queue
-	midiMessages.push_back(msg);
-
-	// remove any old messages if we have too many
-	while (midiMessages.size() > maxMessages) {
-		midiMessages.erase(midiMessages.begin());
-	}
 }

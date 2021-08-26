@@ -19,11 +19,20 @@ public:
     int      current_nn_;   // 現在発振中のノートNo
     int      detune_cent_;  // ボイス間デチューン値（単位はセント）
 
+    /// <summary>
+    /// setNoteNo
+    /// </summary>
+    /// <param name="nn"></param>
+    /// <param name="is_key_on"></param>
     void  setNoteNo(int nn, bool is_key_on)
     {
 
     }
 
+    /// <summary>
+    /// calc
+    /// </summary>
+    /// <returns></returns>
     float calc()
     {
         return 0.0f;
