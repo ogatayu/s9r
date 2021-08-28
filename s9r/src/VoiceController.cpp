@@ -18,5 +18,16 @@ VoiceController::VoiceController()
 /// <returns></returns>
 float VoiceController::signalProcess()
 {
-	return 0;
+    float   val = 0;
+
+#if 0
+    for (int ix = 0; ix < VOICE_NUM; ix++) {
+        if (voice_[ix].isPlaying() == true) {
+            val += voice_[ix].calc();
+        }
+    }
+#endif
+    val += voice_[0].calc();
+
+	return val;
 }

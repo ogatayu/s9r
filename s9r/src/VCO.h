@@ -1,12 +1,13 @@
 #pragma once
 
 #include <stdint.h>
+#include "ofMain.h"
 
 class VCO {
 public:
     VCO()
     {
-        phase_       = 0;
+        wave_phase_  = 0;
         nn_          = 0;
         current_nn_  = 0;
         detune_cent_ = 0;
@@ -14,10 +15,10 @@ public:
     ~VCO() {}
 
     // variable
-    uint32_t phase_;        // 16:16 fixed-point
-    int      nn_;           // 発振指定されたノートNo
-    int      current_nn_;   // 現在発振中のノートNo
-    int      detune_cent_;  // ボイス間デチューン値（単位はセント）
+    float wave_phase_;
+    int   nn_;           // 発振指定されたノートNo
+    int   current_nn_;   // 現在発振中のノートNo
+    int   detune_cent_;  // ボイス間デチューン値（単位はセント）
 
     /// <summary>
     /// setNoteNo
@@ -35,6 +36,11 @@ public:
     /// <returns></returns>
     float calc()
     {
-        return 0.0f;
+        float sample = sin(wave_phase_) * 0.3;
+
+        float wave_phase_step = (440.0 / 44100.0) * TWO_PI;
+        wave_phase_ += wave_phase_step;
+
+        return sample;
     }
 };

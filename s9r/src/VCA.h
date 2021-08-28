@@ -8,7 +8,7 @@ public:
     ~VCA() {}
     void  trigger() {}
     void  release() {}
-    bool  isPlaying() { return false; }
+    bool  isPlaying() { return true; }
 
     float calc(float val)
     { 

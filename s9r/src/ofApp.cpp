@@ -57,8 +57,9 @@ void ofApp::exit() {
 //--------------------------------------------------------------
 void ofApp::audioOut(ofSoundBuffer& outBuffer) {
 	for (size_t i = 0; i < outBuffer.getNumFrames(); i++) {
+		float val = synth.signalProcess(0);
 		for (size_t ch = 0; ch < OUTPUT_CHANNELS; ch++) {
-			outBuffer.getSample(i, ch) = synth.signalProcess(ch);
+			outBuffer.getSample(i, ch) = val;
 		}
 	}
 
