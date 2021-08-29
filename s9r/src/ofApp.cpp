@@ -21,7 +21,7 @@ void ofApp::setup(){
 	settings.numOutputChannels = OUTPUT_CHANNELS;
 	settings.sampleRate = 44100;
 	settings.bufferSize = 512;
-	settings.numBuffers = 4;
+	settings.numBuffers = 0;
 	settings.setOutListener(this);
 	soundStream.setup(settings);
 
@@ -56,16 +56,19 @@ void ofApp::exit() {
 
 //--------------------------------------------------------------
 void ofApp::audioOut(ofSoundBuffer& outBuffer) {
+	synthMutex.lock();
 	for (size_t i = 0; i < outBuffer.getNumFrames(); i++) {
 		float val = synth.signalProcess(0);  // @@@ WIP
 		for (size_t ch = 0; ch < OUTPUT_CHANNELS; ch++) {
 			outBuffer.getSample(i, ch) = val;
 		}
 	}
+	synthMutex.unlock();
 }
 
 //--------------------------------------------------------------
 void ofApp::newMidiMessage(ofxMidiMessage& msg) {
+	synthMutex.lock();
 	switch (msg.status)
 	{
 	case MIDI_NOTE_ON:
@@ -79,6 +82,7 @@ void ofApp::newMidiMessage(ofxMidiMessage& msg) {
 	default:
 		break;
 	}
+	synthMutex.unlock();
 }
 
 //--------------------------------------------------------------

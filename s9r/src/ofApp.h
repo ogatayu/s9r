@@ -31,13 +31,12 @@ class ofApp : public ofBaseApp, public ofxMidiListener {
 		float  frequency = 440.0;
 
 		Synth synth;
+		std::mutex synthMutex;
 
-		std::mutex    audioMutex;
 		ofSoundStream soundStream;
 		ofSoundBuffer lastBuffer;
 		void audioOut(ofSoundBuffer& outBuffer);
 
-		ofxMidiIn                   midiIn;
-		std::size_t                 maxMessages = 10; //< max number of messages to keep track of
+		ofxMidiIn midiIn;
 		void newMidiMessage(ofxMidiMessage& eventArgs);
 };

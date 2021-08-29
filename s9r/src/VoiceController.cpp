@@ -34,7 +34,7 @@ float VoiceController::signalProcess()
         resetStatusChange();  // 鍵盤状態変更フラグを落とす
     }
 
-    float   val = 0;
+    float val = 0;
 
 #if 1
     for (int ix = 0; ix < VOICE_NUM; ix++) {
@@ -55,6 +55,7 @@ float VoiceController::signalProcess()
 */
 void VoiceController::triggerPoly()
 {
+    // ノートオフならリリースする
     for (std::list<Voice*>::iterator v = on_voices_.begin(); v != on_voices_.end(); ) {
         if (key_table_[(*v)->getNoteNo()] == 0) {
             (*v)->release();
@@ -65,12 +66,14 @@ void VoiceController::triggerPoly()
         }
     }
 
+    // トリガー処理
     int num = MIN(poly_voice_num_, on_key_num_);
     for (int i = 0; i < num; i++) {
 
         int noteNo = getNewOnKeyNN(i);
         if (noteNo == -1) break;
 
+        // 同じノート番号のボイスがあればリリースする
         for (std::list<Voice*>::iterator v = on_voices_.begin(); v != on_voices_.end(); ) {
             if ((*v)->getNoteNo() == noteNo) {
                 (*v)->release();
@@ -79,6 +82,7 @@ void VoiceController::triggerPoly()
             else v++;
         }
 
+        // ユニゾンボイスの数だけトリガー処理
         Voice* pUnisonMasterVoice;
         for (int u = 0; u < unison_num_; u++) {
             Voice* v = getNextOffVoice();
@@ -100,7 +104,7 @@ void VoiceController::triggerPoly()
 }
 
 /**
- * @brief GetNextOffVoice
+ * @brief getNextOffVoice
  */
 Voice* VoiceController::getNextOffVoice()
 {

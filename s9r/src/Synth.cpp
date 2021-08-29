@@ -11,7 +11,6 @@
 float Synth::signalProcess(int channel)
 {
     float val = voicectrl_.signalProcess();
-
     return val;
 }
 

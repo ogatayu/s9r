@@ -7,6 +7,7 @@ public:
     VCA()
     {
         env_.setup(44100);
+
         env_.setAttack(10);
         env_.setDecay(100);
         env_.setSustain(0.5f);
