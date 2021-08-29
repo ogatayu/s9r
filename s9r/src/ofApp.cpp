@@ -57,38 +57,27 @@ void ofApp::exit() {
 //--------------------------------------------------------------
 void ofApp::audioOut(ofSoundBuffer& outBuffer) {
 	for (size_t i = 0; i < outBuffer.getNumFrames(); i++) {
-		float val = synth.signalProcess(0);
+		float val = synth.signalProcess(0);  // @@@ WIP
 		for (size_t ch = 0; ch < OUTPUT_CHANNELS; ch++) {
 			outBuffer.getSample(i, ch) = val;
 		}
 	}
-
-#if 0 //@@@ WIP
-	float wavePhaseStep = (frequency / outBuffer.getSampleRate()) * TWO_PI;
-
-	for (size_t i = 0; i < outBuffer.getNumFrames(); i++) {
-		float sample = sin(wavePhase) * 0.3;
-
-		outBuffer.getSample(i, 0) = sample;
-		outBuffer.getSample(i, 1) = sample;
-
-		wavePhase += wavePhaseStep;
-	}
-
-	unique_lock<mutex> lock(audioMutex);
-	lastBuffer = outBuffer;
-#endif
 }
 
 //--------------------------------------------------------------
 void ofApp::newMidiMessage(ofxMidiMessage& msg) {
+	switch (msg.status)
+	{
+	case MIDI_NOTE_ON:
+		synth.onNote(msg.pitch, msg.velocity);
+		break;
 
-	// add the latest message to the message queue
-	midiMessages.push_back(msg);
+	case MIDI_NOTE_OFF:
+		synth.offNote(msg.pitch);
+		break;
 
-	// remove any old messages if we have too many
-	while (midiMessages.size() > maxMessages) {
-		midiMessages.erase(midiMessages.begin());
+	default:
+		break;
 	}
 }
 

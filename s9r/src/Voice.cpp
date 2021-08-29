@@ -77,7 +77,7 @@ void Voice::setNoteParam(int nn, int velo)
 /// <param name="master_voice_ptr"></param>
 /// <param name="unison_num"></param>
 /// <param name="unison_no"></param>
-void Voice::setUnisonParam(Voice& master_voice_ptr, int unison_num, int unison_no)
+void Voice::setUnisonParam(Voice* master_voice_ptr, int unison_num, int unison_no)
 {
     /* do nothing (now...) */
 }

@@ -18,6 +18,9 @@ public:
 
     float signalProcess(int channel);
 
+    void onNote(int nn, int v);
+    void offNote(int nn);
+
 private:
     const float tuning_ = 440.0f;
 

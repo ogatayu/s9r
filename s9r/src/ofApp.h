@@ -38,7 +38,6 @@ class ofApp : public ofBaseApp, public ofxMidiListener {
 		void audioOut(ofSoundBuffer& outBuffer);
 
 		ofxMidiIn                   midiIn;
-		std::vector<ofxMidiMessage> midiMessages;
 		std::size_t                 maxMessages = 10; //< max number of messages to keep track of
 		void newMidiMessage(ofxMidiMessage& eventArgs);
 };

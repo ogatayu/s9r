@@ -37,7 +37,7 @@ public:
 
     void setNoteParam(int nn, int velo);
     int  getNoteNo() { return nn_; };    // ”­Uƒm[ƒgNo‚ğ•Ô‚·
-    void setUnisonParam(Voice& pMasterVoice, int unisonNum, int unisonNo);
+    void setUnisonParam(Voice* master_voice_ptr, int unisonNum, int unisonNo);
 
     bool  isPlaying();
     bool  isKeyOn();

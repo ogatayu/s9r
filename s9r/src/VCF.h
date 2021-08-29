@@ -2,8 +2,6 @@
 
 
 class VCF {
-private:
-
 public:
     VCF() {}
     ~VCF() {}
@@ -12,4 +10,7 @@ public:
     {
         return val;
     }
+
+private:
+
 };
