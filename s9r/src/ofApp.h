@@ -3,6 +3,8 @@
 #include "ofMain.h"
 #include "ofxMidi.h"
 
+#include "Synth.h"
+
 class ofApp : public ofBaseApp, public ofxMidiListener {
 
 	public:
@@ -10,8 +12,6 @@ class ofApp : public ofBaseApp, public ofxMidiListener {
 		void update();
 		void draw();
 		void exit();
-
-		void audioOut(ofSoundBuffer& outBuffer);
 
 		void keyPressed(int key);
 		void keyReleased(int key);
@@ -25,15 +25,18 @@ class ofApp : public ofBaseApp, public ofxMidiListener {
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
 
-		double wavePhase;
+		static constexpr int OUTPUT_CHANNELS = 2;
 
-		std::mutex audioMutex;
+		double wavePhase = 0.0;
+		float  frequency = 440.0;
+
+		Synth synth;
+		std::mutex synthMutex;
+
 		ofSoundStream soundStream;
 		ofSoundBuffer lastBuffer;
-
+		void audioOut(ofSoundBuffer& outBuffer);
 
 		ofxMidiIn midiIn;
-		std::vector<ofxMidiMessage> midiMessages;
-		std::size_t maxMessages = 10; //< max number of messages to keep track of
 		void newMidiMessage(ofxMidiMessage& eventArgs);
 };

@@ -18,18 +18,16 @@ void ofApp::setup(){
 	auto devices = soundStream.getDeviceList(ofSoundDevice::Api::MS_DS);
 	settings.setOutDevice(devices[1]);
 
-	settings.numOutputChannels = 2;
+	settings.numOutputChannels = OUTPUT_CHANNELS;
 	settings.sampleRate = 44100;
 	settings.bufferSize = 512;
-	settings.numBuffers = 4;
+	settings.numBuffers = 0;
 	settings.setOutListener(this);
 	soundStream.setup(settings);
 
 	// Midi
-
-	// print input ports to console
 #ifdef _DEBUG
-	midiIn.listInPorts();
+	midiIn.listInPorts();     // print input ports to console
 	midiIn.setVerbose(true);
 #endif
 
@@ -58,20 +56,33 @@ void ofApp::exit() {
 
 //--------------------------------------------------------------
 void ofApp::audioOut(ofSoundBuffer& outBuffer) {
-	float frequency = 440.0;
-	float wavePhaseStep = (frequency / outBuffer.getSampleRate()) * TWO_PI;
-
+	synthMutex.lock();
 	for (size_t i = 0; i < outBuffer.getNumFrames(); i++) {
-		float sample = sin(wavePhase) * 0.3;
-
-		outBuffer.getSample(i, 0) = sample;
-		outBuffer.getSample(i, 1) = sample;
-
-		wavePhase += wavePhaseStep;
+		float val = synth.signalProcess(0);  // @@@ WIP
+		for (size_t ch = 0; ch < OUTPUT_CHANNELS; ch++) {
+			outBuffer.getSample(i, ch) = val;
+		}
 	}
+	synthMutex.unlock();
+}
 
-	unique_lock<mutex> lock(audioMutex);
-	lastBuffer = outBuffer;
+//--------------------------------------------------------------
+void ofApp::newMidiMessage(ofxMidiMessage& msg) {
+	synthMutex.lock();
+	switch (msg.status)
+	{
+	case MIDI_NOTE_ON:
+		synth.onNote(msg.pitch, msg.velocity);
+		break;
+
+	case MIDI_NOTE_OFF:
+		synth.offNote(msg.pitch);
+		break;
+
+	default:
+		break;
+	}
+	synthMutex.unlock();
 }
 
 //--------------------------------------------------------------
@@ -127,17 +138,4 @@ void ofApp::gotMessage(ofMessage msg){
 //--------------------------------------------------------------
 void ofApp::dragEvent(ofDragInfo dragInfo){ 
 
-}
-
-
-//--------------------------------------------------------------
-void ofApp::newMidiMessage(ofxMidiMessage& msg) {
-
-	// add the latest message to the message queue
-	midiMessages.push_back(msg);
-
-	// remove any old messages if we have too many
-	while (midiMessages.size() > maxMessages) {
-		midiMessages.erase(midiMessages.begin());
-	}
 }
