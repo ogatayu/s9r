@@ -104,14 +104,14 @@ void VoiceController::triggerPoly()
 }
 
 /**
- * @brief getNextOffVoice
+ * @brief g—p‚³‚ê‚Ä‚¢‚È‚¢Voice‚ğŒŸõ‚µ‚Ä•Ô‚·
  */
 Voice* VoiceController::getNextOffVoice()
 {
     int current_voice_no = current_voice_no_;
     for (int i = 0; i < VOICE_NUM; i++) {
         current_voice_no = (current_voice_no + 1) % VOICE_NUM;
-        if (!voice_[current_voice_no].isKeyOn()) {
+        if (!voice_[current_voice_no].isPlaying()) {
             return &(voice_[current_voice_no]);
         }
     }
