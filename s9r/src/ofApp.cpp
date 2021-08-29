@@ -39,12 +39,28 @@ void ofApp::setup(){
 
 //--------------------------------------------------------------
 void ofApp::update(){
+	lastBufferMutex.lock();
+	
+	waveform_.clear();
+	
+	for (size_t i = 0; i < lastBuffer.getNumFrames(); i++) {
+		float sample = lastBuffer.getSample(i, 0);
+		float x = ofMap(i, 0, lastBuffer.getNumFrames(), 0, ofGetWidth());
+		float y = ofMap(sample, -1, 1, 0, ofGetHeight());
+		waveform_.addVertex(x, y);
+	}
+	
+	rms = lastBuffer.getRMSAmplitude();
 
+	lastBufferMutex.unlock();
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-
+	ofBackground(ofColor::black);
+	ofSetColor(ofColor::white);
+	ofSetLineWidth(1 + (rms * 30.));
+	waveform_.draw();
 }
 
 //--------------------------------------------------------------
@@ -64,6 +80,10 @@ void ofApp::audioOut(ofSoundBuffer& outBuffer) {
 		}
 	}
 	synthMutex.unlock();
+
+	lastBufferMutex.lock();
+	lastBuffer = outBuffer;
+	lastBufferMutex.unlock();
 }
 
 //--------------------------------------------------------------

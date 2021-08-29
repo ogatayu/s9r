@@ -30,13 +30,17 @@ class ofApp : public ofBaseApp, public ofxMidiListener {
 		double wavePhase = 0.0;
 		float  frequency = 440.0;
 
-		Synth synth;
+		Synth      synth;
 		std::mutex synthMutex;
 
 		ofSoundStream soundStream;
-		ofSoundBuffer lastBuffer;
 		void audioOut(ofSoundBuffer& outBuffer);
 
 		ofxMidiIn midiIn;
 		void newMidiMessage(ofxMidiMessage& eventArgs);
+
+		std::mutex    lastBufferMutex;
+		ofSoundBuffer lastBuffer;
+		ofPolyline    waveform_;
+		float         rms;
 };
