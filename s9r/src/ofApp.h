@@ -24,11 +24,24 @@ class ofApp : public ofBaseApp, public ofxMidiListener {
 		void windowResized(int w, int h);
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
+		
+		ofJson config_;
+		template<typename T>
+		T getConfig(ofJson node, const T& default_value) {
+			if (node.is_null()) {
+				return default_value;
+			}
+			return node;
+		}
+
+		std::string getConfig(ofJson node, const char* defaultValue) {
+			return getConfig<std::string>(node, defaultValue);
+		}
 
 		static constexpr int OUTPUT_CHANNELS = 2;
 
 		double wavePhase = 0.0;
-		float  frequency = 440.0;
+		float  tuning_ = 440.0;
 
 		Synth      synth;
 		std::mutex synthMutex;

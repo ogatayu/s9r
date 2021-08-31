@@ -1,7 +1,12 @@
 #include "ofApp.h"
 
+
 //--------------------------------------------------------------
 void ofApp::setup(){
+	// load settings
+	config_ = ofLoadJson("config.json");
+
+	// Setup screen
 	ofSetVerticalSync(true);
 	ofBackground(255, 255, 255);
 
@@ -9,18 +14,16 @@ void ofApp::setup(){
 	ofSetLogLevel(OF_LOG_VERBOSE);
 #endif
 
-	// Variable
-	wavePhase = 0;
-
 	// Sound stream
 	ofSoundStreamSettings settings;
 
 	auto devices = soundStream.getDeviceList(ofSoundDevice::Api::MS_DS);
-	settings.setOutDevice(devices[1]);
+	int out_dev_id = getConfig(config_["audio.outputDeviceId"], 0);
+	settings.setOutDevice(devices[out_dev_id]);
 
 	settings.numOutputChannels = OUTPUT_CHANNELS;
-	settings.sampleRate = 44100;
-	settings.bufferSize = 512;
+	settings.sampleRate = getConfig(config_["audio.sampleRate"], 44100);
+	settings.bufferSize = getConfig(config_["audio.bufferSize"], 512);
 	settings.numBuffers = 0;
 	settings.setOutListener(this);
 	soundStream.setup(settings);
@@ -31,7 +34,7 @@ void ofApp::setup(){
 	midiIn.setVerbose(true);
 #endif
 
-	midiIn.openPort(17);
+	midiIn.openPort(getConfig(config_["midi.inputDevice"], 0));
 	//midiIn.openPort("iRig KEYS 25 17");
 	midiIn.ignoreTypes(false, false, false);
 	midiIn.addListener(this);
